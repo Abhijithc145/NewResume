@@ -7,6 +7,8 @@ class Candidate(models.Model):
     education = models.CharField(max_length=500)
     experions = models.CharField(max_length=100)
     language = models.CharField(max_length=100)
+    address = models.CharField(max_length=500)
+    websites = models.CharField(max_length=1000)
     phonenumber= models.CharField(max_length=100,unique=True)
     personemails = models.CharField(max_length=100,unique=True)
     

@@ -13,6 +13,7 @@ class Datas(APIView):
         skills=[]
         language=[]
         education =[]
+        websites = []
         # regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
         f = open('app/data1.json')
         data = json.load(f)
@@ -22,7 +23,10 @@ class Datas(APIView):
         phonenumber = datas['phoneNumbers'][0]
         experience= datas['totalYearsExperience']
         
-        print(experience)
+        for i in range(0,len(datas['websites'])):
+            websites.append(datas['websites'][i])
+        print(websites)
+        
         for i in range(0,len(datas['education'])):
             education.append((datas['education'][i]['accreditation']['education'],datas['education'][i]['organization']))
 
@@ -31,8 +35,8 @@ class Datas(APIView):
 
         for i in range(0,len(datas['skills'])):
             skills.append(datas['skills'][i]['name'])   
-        print("kkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-        Candidate.objects.create(firstname=name,skills=skills,education=education,personemails=personemails,phonenumber=phonenumber,language=language,experions=experience)
+        
+        Candidate.objects.create(firstname=name,skills=skills,education=education,personemails=personemails[0],phonenumber=phonenumber,language=language,experions=experience,websites=websites)
         # print(Person.objects.all(()))
 
         
