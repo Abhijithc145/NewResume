@@ -21,11 +21,18 @@ class Datas(APIView):
         language=[]
         education =[]
         websites = []
-        f = open('app/newdata1.json')
+        f = open('app/Shahin.json')
         data = json.load(f)
         datas = data['resumes'][0]['data']
         name = datas['name']['raw']
-        personemails = datas['emails']
+        if datas['emails'] == []:
+            personemails = ["nodata"]
+            
+        else :
+            personemails = datas['emails']
+            # print(['emails',data['name'][0]['raw']])
+            print("jjjjjjjjjjjjjjjjjjjjjjjjjjjjj")
+
 
         try:
             experience= datas['totalYearsExperience'].exits
@@ -39,7 +46,7 @@ class Datas(APIView):
             phonenumber="No phone number"
 
         try:
-            address=datas['location']['formatted'].exits()
+            address=datas['location']['formatted'].exits
         except:
             address="No address "
 
@@ -49,7 +56,7 @@ class Datas(APIView):
         
         
         for i in range(0,len(datas['education'])):
-            education.append((datas['education'][i]['accreditation']['education'],datas['education'][i]['organization']))
+            education.append(datas['education'][i]['accreditation']['inputStr'])
 
         for i in range(0,len(datas['languages'])):
             language.append(datas['languages'][i])
@@ -58,7 +65,7 @@ class Datas(APIView):
             skills.append(datas['skills'][i]['name']) 
         try:      
         
-            Candidate.objects.create(firstname=name,address=address,skills=skills,education=education,personemails=personemails[0],phonenumber=phonenumber,language=language,experions=experience,websites=websites)
+            # Candidate.objects.create(firstname=name,address=address,skills=skills,education=education,personemails=personemails[0],phonenumber=phonenumber,language=language,experions=experience,websites=websites)
             return Response(datas,status=status.HTTP_200_OK)
         except:
             return Response({'Error':'The Email address or Phone number is already added in  another resumes .....! ,please Checkit......'})
@@ -158,13 +165,15 @@ class Checkdata(APIView):
         
 
             print("------------------------------The--Datas----------------------------------------------------")
-            print(Candidateserilizer.data[i]['firstname'])
-            print('education count',educationcount)
-            print('skill count',skillcount)
-            print('experions count',experionscount)
+            print("")
+            print("              Name   ",Candidateserilizer.data[i]['firstname'])
+            print('')
+            print('              education count',educationcount) 
+            print('              skill count',skillcount)
+            print('              experions count',experionscount)
 
             print()
-            print("percentage  :",Result,"%")
+            print("              percentage  :",Result,"%")
             print()
             
             # Matchdata.objects.create(name = name,skills=skillcount,education=educationcount)
