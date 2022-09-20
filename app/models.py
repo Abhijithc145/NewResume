@@ -6,7 +6,7 @@ from django.db import models
 class Candidate(models.Model):
     firstname = models.CharField(max_length=100)
     personemails = models.CharField(max_length=100,unique=True)
-    phonenumber= models.CharField(max_length=100,unique=True)
+    phonenumber= models.CharField(max_length=100)
     address = models.CharField(max_length=500)
     education = models.CharField(max_length=500)
     skills = models.CharField(max_length=1000)
@@ -25,7 +25,7 @@ class JobType(models.Model):
 
 
 class Matchdata(models.Model):
-    
+
     name = models.CharField(max_length=100)
     skills = models.CharField(max_length=100)
     locations = models.CharField(max_length=100)

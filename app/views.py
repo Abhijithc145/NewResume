@@ -7,7 +7,7 @@ import re
 from .models import *
 from .serializer import *
 import ast
-
+import math
 
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import ListModelMixin,CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin
@@ -21,7 +21,7 @@ class Datas(APIView):
         language=[]
         education =[]
         websites = []
-        f = open('app/Resume1.json')
+        f = open('app/newdata1.json')
         data = json.load(f)
         datas = data['resumes'][0]['data']
         name = datas['name']['raw']
@@ -125,25 +125,54 @@ class Checkdata(APIView):
                 experionscount =  companyexperions
             else:
                 experionscount =  Candidateserilizer.data[i]['experions']
-                
+
+
+
+
+
             #company 
             companyskillcount = len(companyskill1)
             companyeducationcount = len(companyeducation)
-            companyexperionscount= companyexperions
-            print(companyexperionscount,'kkkkkkkkkkkkkkkkkkkkkkkkkk')
+            companyexperionscount= int(companyexperions)
+            
+
+            # Candidate
+            candidateskillcount = skillcount
+            candidateeducationcount = educationcount
+            candidateexperionscount= int(experionscount)
+            # print(candidateskillcount,candidateeducationcount,candidateexperionscount)
+            
 
 
+            Result = ((((candidateskillcount/companyskillcount)+(candidateeducationcount/companyeducationcount)+(candidateexperionscount/companyexperionscount))/3)*100)
+            Result="{:.1f}".format(Result)
+         
         
 
 
+
+
+
+        # print((((4/7)+1+(5/10)+(2/2))/4)*100)   
+
+        
+
+            print("------------------------------The--Datas----------------------------------------------------")
             print(Candidateserilizer.data[i]['firstname'])
             print('education count',educationcount)
             print('skill count',skillcount)
             print('experions count',experionscount)
+
+            print()
+            print("percentage  :",Result,"%")
+            print()
+            
             # Matchdata.objects.create(name = name,skills=skillcount,education=educationcount)
             skillcount = 0
             educationcount = 0
             experionscount = 0
+
+
 
 
 
@@ -277,4 +306,4 @@ class Checkdata(APIView):
 
 
 
-print((((4/7)+1+(5/10)+(2/2))/4)*100)    
+ 
