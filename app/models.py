@@ -25,6 +25,7 @@ class JobType(models.Model):
 
 
 class Matchdata(models.Model):
+    
     name = models.CharField(max_length=100)
     skills = models.CharField(max_length=100)
     locations = models.CharField(max_length=100)
