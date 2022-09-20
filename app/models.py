@@ -13,15 +13,22 @@ class Candidate(models.Model):
     experions = models.CharField(max_length=100)
     language = models.CharField(max_length=100)
     websites = models.CharField(max_length=1000)
+    education = models.CharField(max_length=500)
+
 
 class JobType(models.Model):
     skills = models.CharField(max_length=500)
     locations = models.CharField(max_length=100)
     education = models.CharField(max_length=500)
+    experions = models.CharField(max_length=100)
+
+
 
 class Matchdata(models.Model):
     name = models.CharField(max_length=100)
     skills = models.CharField(max_length=100)
     locations = models.CharField(max_length=100)
     education = models.CharField(max_length=100)
+    experions = models.CharField(max_length=100)
+
        
