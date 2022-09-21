@@ -28,9 +28,13 @@ class JobType(models.Model):
 class Matchdata(models.Model):
 
     name = models.CharField(max_length=100)
+    emails = models.CharField(max_length=100,unique=True)
     skills = models.CharField(max_length=100)
     locations = models.CharField(max_length=100)
     education = models.CharField(max_length=100)
     experions = models.CharField(max_length=100)
+    percentage = models.CharField(max_length=100)
+
+    
 
        

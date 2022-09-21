@@ -1,3 +1,5 @@
+from sys import api_version
+from unittest import result
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,7 +16,6 @@ from rest_framework.mixins import ListModelMixin,CreateModelMixin,RetrieveModelM
 # Create your views here.
 
 class Datas(APIView):
-    print("llllllllllllllllllllllllllllllllllllllllllllllllll7888l")
     def get(self,request):
         regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
         skills=[]
@@ -48,25 +49,15 @@ class Datas(APIView):
                             print("Its not comming.................")    
                     else:
                         break
-                    #     print(tttt)
-                    #         print(secondemails,"ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo")
-                    #         personemails = secondemails 
-                    #     else:    
-                    #         print("llllll")  
-                                
+                         
             except:
                 print(personemails,"111111111111111111111111111111111111111111111")
 
                 personemails = ["nodata"]
-
-
-            
             
         else :
             personemails = datas['emails']
-            
-            
-
+ 
         try:
             experience= datas['totalYearsExperience'].exits
 
@@ -128,6 +119,13 @@ class Checkdata(APIView):
         companyeducationcount=0
         companyskillcount = 0
 
+        skillsare=[]
+        locationsare=[]
+        educationsare=[]
+        experionsare=0
+        emailare = 0
+
+
 
         average = 0
         Company = JobType.objects.all()
@@ -147,14 +145,17 @@ class Checkdata(APIView):
         Candidates = Candidate.objects.all()
         Candidateserilizer =candidateserilaizer(Candidates,many=True)
 
-
         for i in range(0,len(Candidateserilizer.data)): 
+            experionsare=Candidateserilizer.data[i]['experions']
+            emailare=Candidateserilizer.data[i]['personemails']
+
             for k in range(0,len(companyskill1)):
                 datas=ast.literal_eval(Candidateserilizer.data[i]['skills'])
                 for l in range(0,len(datas)):
                     value = datas[l]
                     if companyskill1[k].lower() == value[0:len(companyskill1[k])].lower():             
                         skillcount=skillcount+1
+                        skillsare.append(value[0:len(companyskill1[k])].upper())
 
 
             for k in range(0,len(companyeducation)):
@@ -163,6 +164,8 @@ class Checkdata(APIView):
                     value = datas[l]    
                     if companyeducation[k].lower() == value[0:len(companyeducation[k])].lower(): 
                         educationcount = educationcount +1
+                        educationsare.append(value[0:len(companyeducation[k])].upper())
+
                               
             if Candidateserilizer.data[i]['experions'] >= companyexperions:
 
@@ -173,6 +176,7 @@ class Checkdata(APIView):
             if companylocation == Candidateserilizer.data[i]['locations']:
                 locationcount=locationcount+1
                 locationTrue = "yes"
+                locationsare.append(Candidateserilizer.data[i]['locations'])
             else:
                 locationcount=0
                 locationTrue= 'NO'
@@ -193,30 +197,31 @@ class Checkdata(APIView):
 
             Result = ((((candidateskillcount/companyskillcount)+(locationcount/1)+(candidateeducationcount/companyeducationcount)+(candidateexperionscount/companyexperionscount))/4)*100)
             Result="{:.1f}".format(Result)
-         
-        
-
-
-
-
-
-        # print((((4/7)+1+(5/10)+(2/2))/4)*100)   
-
-        
-
+  
+            Candidatename = Candidateserilizer.data[i]['firstname']
             print("------------------------------The--Datas----------------------------------------------------")
             print("")
-            print("              Name   ",Candidateserilizer.data[i]['firstname'])
+            print("           Name   ",Candidatename)
             print('')
-            print('              education count',educationcount) 
-            print('              skill count',skillcount)
-            print('              experions count',experionscount)
-            print('              Location',locationTrue)
+            print('              education count',educationcount,"The educations are",educationsare) 
+            print('              skill count',skillcount," the skills are ",skillsare)
+            print('              experions count',experionscount ,"       ",experionsare)
+            print('              Location',locationTrue,'The locations are',locationsare)
             print()
             print("              percentage  :",Result,"%")
-            print()
+            print(emailare)
             
-            # Matchdata.objects.create(name = name,skills=skillcount,education=educationcount)
+            if Matchdata.objects.filter(emails=emailare).exists():
+                print("yes")
+            else:
+                print("no")
+                Matchdata.objects.create(name = Candidatename,emails=emailare,skills=skillsare,locations=locationsare,education=educationsare,experions=experionsare,percentage=Result)
+                
+            skillsare=[]
+            educationsare=[]
+            locationsare=[]
+            emailare=0
+
             skillcount = 0
             educationcount = 0
             experionscount = 0
@@ -226,10 +231,17 @@ class Checkdata(APIView):
 
 
         return Response(Candidateserilizer.data,status=status.HTTP_200_OK)
+
+
+
         
 
 
 
 
-
+class Listdatas(APIView):
+    def get(self,request):
+        datas = Matchdata.objects.all()
+        serializers = Matchserilaizer(datas,many = True)
+        return Response(serializers.data,status=status.HTTP_200_OK)
 
