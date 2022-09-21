@@ -191,10 +191,7 @@ class Checkdata(APIView):
             candidateskillcount = skillcount
             candidateeducationcount = educationcount
             candidateexperionscount= int(experionscount)
-            # print(candidateskillcount,candidateeducationcount,candidateexperionscount)
-            
-
-
+           
             Result = ((((candidateskillcount/companyskillcount)+(locationcount/1)+(candidateeducationcount/companyeducationcount)+(candidateexperionscount/companyexperionscount))/4)*100)
             Result="{:.1f}".format(Result)
   
@@ -241,7 +238,7 @@ class Checkdata(APIView):
 
 class Listdatas(APIView):
     def get(self,request):
-        datas = Matchdata.objects.all()
+        datas = Matchdata.objects.all().order_by('-percentage').values()
         serializers = Matchserilaizer(datas,many = True)
         return Response(serializers.data,status=status.HTTP_200_OK)
 
