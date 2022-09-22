@@ -13,26 +13,45 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from drf_yasg2.views import get_schema_view
-from drf_yasg2 import openapi
 
 from django.contrib import admin
-from django.urls import path,include
-from rest_framework_swagger.views import get_swagger_view
+from django.urls import path,include,re_path
+from app.views import UserViewSet
+from rest_framework.routers import DefaultRouter
+
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+router = DefaultRouter()
+router.register('listdata', UserViewSet, basename='listdata')
+urlpatterns = router.urls
+
+
+
 schema_view = get_schema_view(
-                        openapi.Info(
-                            title="name",
-                            default_version='v1',
-                            description="Test description",
-                            license=openapi.License(name="Test License"),
-                        ),
-                        public=True,
-                        permission_classes=(permissions.AllowAny,),
-                    )
+    openapi.Info(
+        title="Candidate API",
+        default_version='v1',
+        description="Welcome to the world of sort Candidate",
+        terms_of_service="https://www.candidate.org",
+        contact=openapi.Contact(email="candidate@candidate.org"),
+        license=openapi.License(name="Awesome IP"),
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
+)
 
 urlpatterns = [
-    path('swagger/', schema_view.with_ui('swagger',
-                                 cache_timeout=0), name='schema-swagger-ui'),
+    # path('swagger/', schema_view.with_ui('swagger',cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'^doc(?P<format>\.json|\.yaml)$',
+            schema_view.without_ui(cache_timeout=0), name='schema-json'),  #<-- Here
+    path('', schema_view.with_ui('swagger', cache_timeout=0),
+         name='schema-swagger-ui'),  #<-- Here
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0),
+         name='schema-redoc'),  #<-- Here
+
+    path('',include(router.urls)),
     path('admin/', admin.site.urls),
     path('json/',include('app.urls')),
 ]

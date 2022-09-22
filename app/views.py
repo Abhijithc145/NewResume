@@ -1,19 +1,14 @@
-from sys import api_version
-from unittest import result
-from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
-import json    
-import re 
+from rest_framework import status,viewsets
+import ast,json,re 
 from .models import *
 from .serializer import *
-import ast
-import math
-
 from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import ListModelMixin,CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin
 # Create your views here.
+import PyPDF2
+
 
 class Datas(APIView):
     def get(self,request):
@@ -40,21 +35,16 @@ class Datas(APIView):
                             tttt=datas['sections'][i]['text']
                             secondemails= re.findall( r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', tttt)
                             if secondemails != 0 or secondemails != []:
-                                print(secondemails,"llllllllllllllllllllllllllllllllllllllllllll")
                                 personemails = secondemails
                             else:    
-                                print(secondemails,"vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
+                                pass
                                 
                         else:
-                            print("Its not comming.................")    
+                            pass
                     else:
                         break
-                         
             except:
-                print(personemails,"111111111111111111111111111111111111111111111")
-
-                personemails = ["nodata"]
-            
+             personemails = ["nodata"] 
         else :
             personemails = datas['emails']
  
@@ -88,7 +78,6 @@ class Datas(APIView):
         for i in range(0,len(datas['skills'])):
             skills.append(datas['skills'][i]['name']) 
         try:      
-            print(personemails,"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
             Candidate.objects.create(firstname=name,address=address,skills=skills,education=education,locations=location,personemails=personemails[0],phonenumber=phonenumber,language=language,experions=experience,websites=websites)
             return Response(datas,status=status.HTTP_200_OK)
         except:
@@ -185,7 +174,7 @@ class Checkdata(APIView):
             companyskillcount = len(companyskill1)
             companyeducationcount = len(companyeducation)
             companyexperionscount= int(companyexperions)
-            
+            Listdatas
 
             # Candidate
             candidateskillcount = skillcount
@@ -229,16 +218,23 @@ class Checkdata(APIView):
 
         return Response(Candidateserilizer.data,status=status.HTTP_200_OK)
 
+class UserViewSet(viewsets.ViewSet):
 
-
-        
-
-
-
-
-class Listdatas(APIView):
-    def get(self,request):
+    def list(self, request):
         datas = Matchdata.objects.all().order_by('-percentage').values()
         serializers = Matchserilaizer(datas,many = True)
         return Response(serializers.data,status=status.HTTP_200_OK)
 
+class Listdatas(APIView):
+    def get(self,request):
+        pdf_file = open('app/all.pdf', 'rb')
+        read_pdf = PyPDF2.PdfFileReader(pdf_file)
+        number_of_pages = read_pdf.getNumPages()
+        page = read_pdf.getPage(0)
+        page_content = page.extractText()
+        # page_content
+        data = json.dumps(page_content)
+        formatj = json.loads(data)
+        
+
+        return Response(page_content,status=status.HTTP_200_OK)
