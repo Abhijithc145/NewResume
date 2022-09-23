@@ -20,11 +20,14 @@ class Datas(APIView):
         education =[]
         websites = []
         secondemails =0
-        f = open('app/Ananthu.json')
+        f = open('app/SupreetS_CV.json')
         data = json.load(f)
         datas = data['resumes'][0]['data']
         name = datas['name']['raw']
-        location = datas['location']['state']
+        try:
+            location = datas['location']['state']
+        except:
+            location = "No location"
         tttt =0
         personemails=0
         if datas['emails']==[]:
@@ -51,18 +54,18 @@ class Datas(APIView):
             personemails = datas['emails']
  
         try:
-            experience= datas['totalYearsExperience'].exits
+            experience= datas['totalYearsExperience']
 
         except:
             experience=0
         try:
-            phonenumber = datas['phoneNumbers'][0].exits
+            phonenumber = datas['phoneNumbers'][0]
 
         except:
             phonenumber="No phone number"
 
         try:
-            address=datas['location']['formatted'].exits
+            address=datas['location']['formatted']
         except:
             address="No address "
 
@@ -73,14 +76,16 @@ class Datas(APIView):
         
         for i in range(0,len(datas['education'])):
             education.append(datas['education'][i]['accreditation']['inputStr'])
+        
 
         for i in range(0,len(datas['languages'])):
-            language.append(datas['languages'][i])
+            language.append(datas['languages'][i])    
 
         for i in range(0,len(datas['skills'])):
             skills.append(datas['skills'][i]['name']) 
+        print(personemails[0])    
         try:      
-            # Candidate.objects.create(firstname=name,address=address,skills=skills,education=education,locations=location,personemails=personemails[0],phonenumber=phonenumber,language=language,experions=experience,websites=websites)
+            Candidate.objects.create(firstname=name,address=address,skills=skills,education=education,locations=location,personemails=personemails[0],phonenumber=phonenumber,language=language,experions=experience,websites=websites)
             return Response(data,status=status.HTTP_200_OK)
         except:
             return Response({'Error':'The Email address or Phone number is already added in  another resumes .....! ,please Checkit......'})
@@ -300,10 +305,25 @@ class Listdatas(APIView):
 
 
     
+    
 class JobaddPdf(APIView):
     def get(self,request):
+        Educationsl_datas =['MTech','BTech','BE','MCA','BCA','Bcom','BA','IT',]
+        skills=[]
+        language=[]
         f = open('app/Companyjd.json')
         data = json.load(f)
         datas = data['resumes'][0]['data']
+        All=datas
+        for i in range(0,len(datas['skills'])):
+            skills.append(datas['skills'][i]['name']) 
+        for i in range(0,len(datas['languages'])):
+            language.append(datas['languages'][i])    
+        totalYearsExperience = datas['totalYearsExperience']   
+        print("------------------------------------------------------")
+        print(skills)
+        print(language)
+        print(totalYearsExperience)
 
-        return Response(datas,status=status.HTTP_200_OK)       
+
+        return Response(data,status=status.HTTP_200_OK)             
