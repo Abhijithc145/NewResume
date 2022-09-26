@@ -25,6 +25,7 @@ from drf_yasg import openapi
 
 router = DefaultRouter()
 router.register('listdata', UserViewSet, basename='listdata')
+# router.register('pdftojson', PdftoJson, basename='pdftojson')
 urlpatterns = router.urls
 
 
@@ -52,6 +53,8 @@ urlpatterns = [
          name='schema-redoc'),  #<-- Here
 
     path('',include(router.urls)),
+    path('',include(router.urls)),
     path('admin/', admin.site.urls),
     path('json/',include('app.urls')),
+    path('ptoj/',include('PDFtoJson.urls')),
 ]
