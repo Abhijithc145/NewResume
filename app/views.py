@@ -20,10 +20,17 @@ class Datas(APIView):
         education =[]
         websites = []
         secondemails =0
-        f = open('app/Resume/R4.json')
+        f = open('app/Resume/R10.json')
         data = json.load(f)
-        datas = data['resumes'][0]['data']
-        name = datas['name']['raw']
+        try:
+            datas = data['resumes'][0]['data']
+        except:
+            # return Response({'Error':'The Key and Values  are not formated in the json '},status=status.HTTP_404_NOT_FOUND)
+            return Response(data,status=status.HTTP_404_NOT_FOUND)
+        try:    
+            name = datas['name']['raw']
+        except:
+            name ='Name is not available'    
         try:
             location = datas['location']['state']
         except:
@@ -70,7 +77,7 @@ class Datas(APIView):
         try:
             address=datas['location']['formatted']
         except:
-            address="No address "
+            address="No address"
 
         
         for i in range(0,len(datas['websites'])):
@@ -86,14 +93,26 @@ class Datas(APIView):
 
         for i in range(0,len(datas['skills'])):
             skills.append(datas['skills'][i]['name']) 
-        print(personemails,";;;;;;;;;;;;;;;;;;;;;;;;;;;;")   
+
+
+
+        print(personemails)
+        print(type(personemails),";;;;;;;;;;;;;;;;;;;;;;;;;;;;")  
+        # personemails = personemails.split(",")
+        for i in range(0,len(personemails)):
+            secondemails= re.findall( r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',personemails[i])
+            print(secondemails,"oooooooooooooooooooooowwwwwwwwwwwwwoooooooooooooooooooo")
+            # if secondemails != 0 or secondemails != []:
+            #     personemails = secondemails
+            # else:    
+            #     print("-------------1-------------")  
+
         try:      
-            Candidate.objects.create(firstname=name,address=address,skills=skills,education=education,locations=location,personemails=personemails[0],phonenumber=phonenumber,language=language,experions=experience,websites=websites)
+            # Candidate.objects.create(firstname=name,address=address,skills=skills,education=education,locations=location,personemails=personemails[0],phonenumber=phonenumber,language=language,experions=experience,websites=websites)
             return Response(data,status=status.HTTP_200_OK)
         except:
             return Response({'Error':'The Email address or Phone number is already added in  another resumes .....! ,please Check..it......'})
         # return Response(data,status=status.HTTP_200_OK)
-            
  
         
 class Addjobs(GenericAPIView,ListModelMixin,CreateModelMixin,UpdateModelMixin,RetrieveModelMixin,DestroyModelMixin):
@@ -164,9 +183,12 @@ class Checkdata(APIView):
         companyeducation1 = Companyserilizer.data[0]['education']
         companyexperions = Companyserilizer.data[0]['experions']
         companylocation=Companyserilizer.data[0]['locations'].split(",")
-       
-        companylocationcount=len(Companyserilizer.data[0]['locations'])
         
+        try:
+            companylocationcount=len(Companyserilizer.data[0]['locations'])
+        except:
+            pass
+
         companyexperions=companyexperions[0]
 
         companyskill1 = companyskill.split(",")
@@ -213,6 +235,7 @@ class Checkdata(APIView):
                 # print(newcandidateexp>=newcompanyexp)
 
 
+
                 experionscount =  Candidateserilizer.data[i]['experions']
                     
 
@@ -252,7 +275,7 @@ class Checkdata(APIView):
             print(locationcount,"       ",1)
             print(candidateeducationcount,"        ",companyeducationcount)
             # (candidateexperionscount/companyexperionscount)
-            print("------------------------------The--Datas----------------------------------------------------")
+            print("                             The--Datas                                  ")
             print("")
             print("           Name   ",Candidatename)
             print('')
@@ -267,7 +290,7 @@ class Checkdata(APIView):
             if Matchdata.objects.filter(emails=emailare).exists():
                 pass
             else:
-                Matchdata.objects.create(name = Candidatename,emails=emailare,skills=skillsare,locations=locationsare,education=educationsare,experions=experionsare,percentage=Result)
+                Matchdata.objects.create(name = Candidatename,emails=emailare,skills=skillsare,locations=locationsare,education=educationsare,experions=experionscount,percentage=Result)
                 
             skillsare=[]
             educationsare=[]
@@ -300,7 +323,6 @@ class Listdatas(APIView):
         # page_content
         data = json.dumps(page_content)
         formatj = json.loads(data)
-
         return Response(page_content,status=status.HTTP_200_OK)
 
     
@@ -323,4 +345,6 @@ class JobaddPdf(APIView):
         print(language)
         print(totalYearsExperience)
         return Response(data,status=status.HTTP_200_OK)   
+                  
+
                   

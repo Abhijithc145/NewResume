@@ -12,38 +12,44 @@ from io import StringIO
 # from rest_framework.permissions import IsAdminUser
 # from rest_framework.mixins import ListModelMixin,CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin
 import PyPDF2
+import json
 # Create your views here.
 # PdftoJson
-
+import requests
 
 
 
 class convert(APIView):
     def get(self,request):
-        rsrcmgr = PDFResourceManager()
+        # rsrcmgr = PDFResourceManager()
 
-        retstr = StringIO()
-        codec = 'utf-8'
+        # retstr = StringIO()
+        # codec = 'utf-8'
 
-        laparams = LAParams()
-        device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
-        fp = open('PDFtoJson/Arjun_Vijayan_Resume.pdf', 'rb')
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
-        password = ""
-        maxpages = 0
-        caching = True
-        pagenos=set()
+        # laparams = LAParams()
+        # device = TextConverter(rsrcmgr, retstr, codec=codec, laparams=laparams)
+        # fp = open('PDFtoJson/Arjun_Vijayan_Resume.pdf', 'rb')
+        # interpreter = PDFPageInterpreter(rsrcmgr, device)
+        # password = ""
+        # maxpages = 0
+        # caching = True
+        # pagenos=set()
 
-        for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages, password=password,caching=caching, check_extractable=True):
-            interpreter.process_page(page)
+        # for page in PDFPage.get_pages(fp, pagenos, maxpages=maxpages, password=password,caching=caching, check_extractable=True):
+        #     interpreter.process_page(page)
 
-        text = retstr.getvalue()
-        print(text,";;;;;;;;;;;;;;;;;;")
+        # text = retstr.getvalue()
+        # print(text,";;;;;;;;;;;;;;;;;;")
 
-        fp.close()
-        device.close()
-        retstr.close()
+        # fp.close()
+        # device.close()
+        # retstr.close()
+
+        var = requests.get('http://127.0.0.1:8000/listdata/').json()
         
-
+        # var =var[0]
+        # s1 = "Name:Abhijith,age:22,place:kerala"
+        # print(s1)
+        # var=json.dumps(s1)
             
-        return Response(text,status=status.HTTP_200_OK)
+        return Response(var,status=status.HTTP_200_OK)
