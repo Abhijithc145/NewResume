@@ -57,4 +57,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('json/',include('app.urls')),
     path('ptoj/',include('PDFtoJson.urls')),
+    path('data/',include('Checkdata.urls')),
 ]

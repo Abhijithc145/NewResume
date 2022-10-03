@@ -1,3 +1,4 @@
+import stat
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status,viewsets
@@ -8,6 +9,7 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAdminUser
 from rest_framework.mixins import ListModelMixin,CreateModelMixin,RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin
 import PyPDF2
+from django.db.models import Q
 
 # Create your views here.
 
@@ -155,6 +157,21 @@ class Addjobss(GenericAPIView,ListModelMixin,CreateModelMixin,UpdateModelMixin,R
     def delete(self,request,*args,**kwargs):
         return self.destroy(request,*args,**kwargs)    
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class Checkdata(APIView):
     def get(self,request):
         skillcount = 0
@@ -178,133 +195,141 @@ class Checkdata(APIView):
         Company = JobType.objects.all()
         Companyserilizer =dataserilaizer(Company,many=True)
 
-        companyskill = Companyserilizer.data[0]['skills']
-   
-        companyeducation1 = Companyserilizer.data[0]['education']
-        companyexperions = Companyserilizer.data[0]['experions']
-        companylocation=Companyserilizer.data[0]['locations'].split(",")
         
-        try:
-            companylocationcount=len(Companyserilizer.data[0]['locations'])
-        except:
-            pass
 
-        companyexperions=companyexperions[0]
-
-        companyskill1 = companyskill.split(",")
-        companyeducation=companyeducation1.split(",")
-
-        Candidates = Candidate.objects.all()
-        Candidateserilizer =candidateserilaizer(Candidates,many=True)
-
-        for i in range(0,len(Candidateserilizer.data)): 
-            emailare=Candidateserilizer.data[i]['personemails']
-
-            # experionsare=
-            # if 
-            
-
-            for k in range(0,len(companyskill1)):
-                datas=ast.literal_eval(Candidateserilizer.data[i]['skills'])
-                for l in range(0,len(datas)):
-                    value = datas[l]
-                    if companyskill1[k].lower() == value[0:len(companyskill1[k])].lower():             
-                        skillcount=skillcount+1
-                        skillsare.append(value[0:len(companyskill1[k])].upper())
-           
-
-            for k in range(0,len(companyeducation)):
-                datas=ast.literal_eval(Candidateserilizer.data[i]['education'])
-                for l in range(0,len(datas)):
-                    value = datas[l]    
-                    if companyeducation[k].lower() == value[0:len(companyeducation[k])].lower(): 
-                        educationcount = educationcount +1
-                        educationsare.append(value[0:len(companyeducation[k])].upper())
-
-            if int(Candidateserilizer.data[i]['experions']) >= int(companyexperions):
-
-                experionscount =  companyexperions
-          
-            else:
-                # print(int(Candidateserilizer.data[i]['experions']))
-                # print((Candidateserilizer.data[i]['experions']))
-                # print(companyexperions)
-                # print(type())
-                # newcandidateexp=int(Candidateserilizer.data[i]['experions'])
-                # newcompanyexp = int(companyexperions)
-                # print(newcandidateexp>=newcompanyexp)
-
-
-
-                experionscount =  Candidateserilizer.data[i]['experions']
-                    
-
-            datas=Candidateserilizer.data[i]['locations']
-            for p in datas:
-                dataaddedvalues.append(p)
-               
-            for k in range(0,len(companylocation)):
-
-                if companylocation[k].lower() == datas.lower():
-                    locationcount=locationcount+1
-                    locationTrue = "yes"
-                    locationsare.append(datas)
-
-                else:
-                    if locationcount == 0:
-                        locationcount=0
-                        locationTrue= 'NO'
         
-            #company 
-            companyskillcount = len(companyskill1)
-            companyeducationcount = len(companyeducation)
-            companyexperionscount= int(companyexperions)
-            
+        # print(len(Company))
+        for v in range(0,len(Company)):
+            print(Companyserilizer.data[v],"company .....d")
 
-            # Candidate
-            candidateskillcount = skillcount
-            candidateeducationcount = educationcount
-            candidateexperionscount= int(experionscount)
-          
-            Result = ((((candidateskillcount/companyskillcount)+(locationcount/1)+(candidateeducationcount/companyeducationcount)+(candidateexperionscount/companyexperionscount))/4)*100)
-            Result="{:.1f}".format(Result)
-  
-            Candidatename = Candidateserilizer.data[i]['firstname']
-            print(candidateexperionscount,"          ",companyexperionscount)
-            print(candidateskillcount,"              ",companyskillcount)
-            print(locationcount,"       ",1)
-            print(candidateeducationcount,"        ",companyeducationcount)
-            # (candidateexperionscount/companyexperionscount)
-            print("                             The--Datas                                  ")
-            print("")
-            print("           Name   ",Candidatename)
-            print('')
-            print('              education count',educationcount,"The educations are",educationsare) 
-            print('              skill count',skillcount," the skills are ",skillsare)
-            print('              experions count',experionscount ,"       ",experionsare)
-            print('              Location',locationTrue,'The locations are',locationsare)
-            print()
-            print("              percentage  :",Result,"%")
-            print(emailare)
+
+
+            job_type =  Companyserilizer.data[v]['job_Type']
+            print(job_type,"--------------------Job Type--------------------")
+
+            companyskill = Companyserilizer.data[v]['skills']
+    
+            companyeducation1 = Companyserilizer.data[v]['education']
+            companyexperions = Companyserilizer.data[v]['experions']
+            companylocation=Companyserilizer.data[v]['locations'].split(",")
             
-            if Matchdata.objects.filter(emails=emailare).exists():
+            try:
+                companylocationcount=len(Companyserilizer.data[v]['locations'])
+            except:
                 pass
-            else:
-                Matchdata.objects.create(name = Candidatename,emails=emailare,skills=skillsare,locations=locationsare,education=educationsare,experions=experionscount,percentage=Result)
-                
-            skillsare=[]
-            educationsare=[]
-            locationsare=[]
-            emailare=0
-            companyexperionscount=0
 
-            skillcount = 0
-            educationcount = 0
-            locationcount=0
-            experionscount = 0
+            companyexperions=companyexperions[0]
+
+            companyskill1 = companyskill.split(",")
+            companyeducation=companyeducation1.split(",")
+
+            Candidates = Candidate.objects.all()
+            Candidateserilizer =candidateserilaizer(Candidates,many=True)
+
+            for i in range(0,len(Candidateserilizer.data)): 
+                emailare=Candidateserilizer.data[i]['personemails']
+
+                # experionsare=
+                # if 
+                
+
+                for k in range(0,len(companyskill1)):
+                    datas=ast.literal_eval(Candidateserilizer.data[i]['skills'])
+                    for l in range(0,len(datas)):
+                        value = datas[l]
+                        if companyskill1[k].lower() == value[0:len(companyskill1[k])].lower():             
+                            skillcount=skillcount+1
+                            skillsare.append(value[0:len(companyskill1[k])].upper())
+            
+
+                for k in range(0,len(companyeducation)):
+                    datas=ast.literal_eval(Candidateserilizer.data[i]['education'])
+                    for l in range(0,len(datas)):
+                        value = datas[l]    
+                        if companyeducation[k].lower() == value[0:len(companyeducation[k])].lower(): 
+                            educationcount = educationcount +1
+                            educationsare.append(value[0:len(companyeducation[k])].upper())
+
+                if int(Candidateserilizer.data[i]['experions']) >= int(companyexperions):
+
+                    experionscount =  companyexperions
+            
+                else:
+                
+                    experionscount =  Candidateserilizer.data[i]['experions']
+                        
+
+                datas=Candidateserilizer.data[i]['locations']
+                for p in datas:
+                    dataaddedvalues.append(p)
+                
+                for k in range(0,len(companylocation)):
+
+                    if companylocation[k].lower() == datas.lower():
+                        locationcount=locationcount+1
+                        locationTrue = "yes"
+                        locationsare.append(datas)
+
+                    else:
+                        if locationcount == 0:
+                            locationcount=0
+                            locationTrue= 'NO'
+            
+                #company 
+                companyskillcount = len(companyskill1)
+                companyeducationcount = len(companyeducation)
+                companyexperionscount= int(companyexperions)
+                
+
+                # Candidate
+                candidateskillcount = skillcount
+                candidateeducationcount = educationcount
+                candidateexperionscount= int(experionscount)
+            
+                Result = ((((candidateskillcount/companyskillcount)+(locationcount/1)+(candidateeducationcount/companyeducationcount)+(candidateexperionscount/companyexperionscount))/4)*100)
+                Result="{:.1f}".format(Result)
+    
+                Candidatename = Candidateserilizer.data[i]['firstname']
+                # print(candidateexperionscount,"          ",companyexperionscount)
+                # print(candidateskillcount,"              ",companyskillcount)
+                # print(locationcount,"       ",1)
+                # print(candidateeducationcount,"        ",companyeducationcount)
+                # # (candidateexperionscount/companyexperionscount)
+                # print("                             The--Datas                                  ")
+                # print("")
+                # print("           Name   ",Candidatename)
+                # print('')
+                # print('              education count',educationcount,"The educations are",educationsare) 
+                # print('              skill count',skillcount," the skills are ",skillsare)
+                # print('              experions count',experionscount ,"       ",experionsare)
+                # print('              Location',locationTrue,'The locations are',locationsare)
+                # print()
+                # print("              percentage  :",Result,"%")
+                # print(emailare)
+                
+                if Matchdata.objects.filter(emails=emailare ,job_Type=job_type).exists():
+                    print("data")
+                else:
+                    Matchdata.objects.create(job_Type=job_type,name = Candidatename,emails=emailare,skills=skillsare,locations=locationsare,education=educationsare,experions=experionscount,percentage=Result)
+                    
+                skillsare=[]
+                educationsare=[]
+                locationsare=[]
+                emailare=0
+                companyexperionscount=0
+
+                skillcount = 0
+                educationcount = 0
+                locationcount=0
+                experionscount = 0
 
 
         return Response(Candidateserilizer.data,status=status.HTTP_200_OK)
+
+
+
+
+
 
 class UserViewSet(viewsets.ViewSet):
 
@@ -312,6 +337,31 @@ class UserViewSet(viewsets.ViewSet):
         datas = Matchdata.objects.all().order_by('-percentage').values()
         serializers = Matchserilaizer(datas,many = True)
         return Response(serializers.data,status=status.HTTP_200_OK)
+
+
+class Checkdata_list(APIView):
+    def get(self,request,pk):
+        
+        try:
+            data = JobType.objects.get(id = pk)
+            data_serilizer = dataserilaizer(data).data
+
+            values = data_serilizer['job_Type']
+
+            filter_data = Matchdata.objects.all()
+            filter_serilizer = Matchserilaizer(filter_data,many=True).data
+
+            if Matchdata.objects.filter(job_Type=values):
+                datass =Matchserilaizer(Matchdata.objects.filter(job_Type=values).order_by('-percentage').values(),many=True).data
+                return Response(datass,status=status.HTTP_200_OK)
+                
+            else:
+                return Response({'Error':"No Datas are available in the Table"},status=status.HTTP_200_OK)
+        except:
+            return Response({'Error':"No Datas are available in the Table"},status=status.HTTP_200_OK)
+
+ 
+
 
 class Listdatas(APIView):
     def get(self,request):

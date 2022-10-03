@@ -1,8 +1,11 @@
 from operator import mod
+from unittest.util import _MAX_LENGTH
 from xml.parsers.expat import model
 from django.db import models
 
 # Create your models here.
+
+
 class Candidate(models.Model):
     firstname = models.CharField(max_length=100)
     personemails = models.CharField(max_length=100,unique=True)
@@ -18,6 +21,7 @@ class Candidate(models.Model):
 
 
 class JobType(models.Model):
+    job_Type = models.CharField(max_length=500)
     skills = models.CharField(max_length=500)
     locations = models.CharField(max_length=100)
     education = models.CharField(max_length=500)
@@ -26,9 +30,9 @@ class JobType(models.Model):
 
 
 class Matchdata(models.Model):
-
+    job_Type = models.CharField(max_length=500)
     name = models.CharField(max_length=100)
-    emails = models.CharField(max_length=100,unique=True)
+    emails = models.CharField(max_length=100)
     skills = models.CharField(max_length=100)
     locations = models.CharField(max_length=100)
     education = models.CharField(max_length=100)

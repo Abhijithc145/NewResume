@@ -9,5 +9,8 @@ urlpatterns = [
      path('data/',Datas.as_view(),name='details'),             #Json data add in models
      path('checkdata/',Checkdata.as_view(),name='checkdata'),  #Check company data and candidate data 
      path('jobpdf/',JobaddPdf.as_view(),name='jobpdf'),    #List candidate data with include percentage
+     
 
+
+     path('checkdata/<int:pk>',Checkdata_list.as_view(),name='checkdatas'),  #Check company data and candidate data 
 ]
