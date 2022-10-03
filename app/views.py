@@ -363,7 +363,6 @@ class Checkdata_list(APIView):
  
 
 
-class Listdatas(APIView):
     def get(self,request):
         pdf_file = open('app/all.pdf', 'rb')
         read_pdf = PyPDF2.PdfFileReader(pdf_file)
